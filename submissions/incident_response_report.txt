@@ -1,0 +1,23 @@
+1. Incident commander name:
+A cryptomining attack
+
+2. Executive Summary of what happened:
+Three pods running three different crypto miners were launched, A attacker was able to launch a script onto the cluster using kubectl.
+
+3. Summary of what was affected:
+The attacker was able to get control of the cluster and run containers on the cluster.
+Attackers are after compute resources to abuse for crypto-mining. This is related to the crypto miners being started.
+The attacker was able to execute the pods with kubectl, which means they have access to an administrative terminal and the kubeconfig file.
+
+4. Summmry of the impact:
+The attacker managed to run crypto miners on the cluster. Usually, crypto-mining consumes a lot of CPU.
+The Kubernetes resources dashboard in Grafana shows the significant spike in CPU utilization.
+
+5. Summary of the remediation steps:
+- Kill damaged pods by using this command `kubectl delete pod <pod_name> --grace-period=0 --force`
+- Verify CPU activity stabilization
+- review adminstration roles on kubernates API
+- Configured Admission controllers to disallow unknown images to be used to create containers.
+
+6. Summary of lessons learned:
+It is good to have monitoring like Grafana dashboards. It would be helpful to have alerts from Falco for events like this.

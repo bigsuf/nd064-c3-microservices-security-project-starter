@@ -1,0 +1,9 @@
+1. How will you test the changes?
+we will using testing envirment as sandbox cluster, the sandbox cluster will mimic production cluster to maximize the accuracy of tests.
+this should be achievable via declarative configurations, and a portion of the production traffic will be redirected to the sandbox cluster via load-balancer or service-mesh configurations.
+This is good practice that we can implement as part of our deployment strategy and Software Development Lifecycle.
+
+2. How will you ensure the changes don't negatively affect your cluster?
+ The change will be tested in a sandbox cluster as described above.
+ Once the change is applied in Production, I will monitor metrics via the observability stack.  
+ Therefore, if we found any error in latest version we can roulback the cluster to previous version.

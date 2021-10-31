@@ -1,0 +1,37 @@
+Docker Threat Modeling
+Given Docker's system components and the STRIDE framework, identify five potential threats that may arise.
+
+1. Spoofing: we should remove `new_raw` capability if not explicitly required, as it can give an attacker with access to a container the ability to create spoofed network traffic.
+2. Tampering: Due to misconfiguration of docker, attacker could hijack the docker client to pull down an image with malware
+3. Repudiation: A user may make changes to the daemon configuration (/etc/docker/daemon.json) that are not legitimate, leading to misconfiguration. Could audit /etc/docker/daemon.json to log events on the file.
+4. Information Disclosure: API keys and database passwords must be kept secure to prevent attackers gaining access. The container file system should be set to read-only.
+5. Denial of Service: we can use memory limit mechanisms to prevent a denial of service from occurring, where one container consumes all of the host’s resources and other containers on the same host are therefore not able to function.
+
+
+
+Kubernetes Threat Modeling
+Given Kubernetes' system components and the STRIDE framework, identify five potential threats that may arise.
+
+1. Spoofing: API-Server is a critical component of a kubernetes cluster, and unauthorized access to is will compromise the entire cluster.  Disabling basic authentication, disabling anonymous access to the console and removing internet access to the master/api-server
+2. Tampering: An attacker accesses the kubernetes cluster and installs malware onto one of the pods.
+3. Repudiation: Kubernetes natively doesn't allow certificate revocation, which may lead to repudiation if a certificate cannot be revoked when necessary.
+4. Information Disclosure: Major approaches focuses on being able to read secret data from the cluster directly by exploiting misconfigured RBAC permissions. Other approaches include viewing sensitive data stored within logs and eavesdropping on network traffic.
+5. Denial of Service: Kubelets running on the worker nodes can be sent excessive requests resulting a denial of services. This can be mitigated by enabling node-restriction admission controller to vet all incoming requests and only allow those coming from registered nodes.
+
+
+
+Docker-bench Run Results and Analysis
+From the failed findings, select and document 3 findings from the Docker-bench results that you want to harden based on the 5 attack surface areas you identified in Step 1. At least 1 of the 3 hardened findings should be different from the ones mentioned in the exercise (i.e. 5.10, 5.14, and 5.22).
+
+* 2.2 - Ensure network traffic is restricted between containers on the default bridge (Automated)
+    All network traffic is allowed by default between containers, this can cause information to leak between the containers.
+    To fix this the daemon.json file should have '"icc": false' added to it.
+* 2.14 - Ensure containers are restricted from acquiring new privileges (Automated)
+    By default a container should restrict the ability to acquire new privileges. 
+    To fix this the daemon.json file should have '"no-new-privileges": true' added to it.
+* 2.15 - Ensure live restore is Enabled (Automated)
+    Setting the live-restore to true ensures that the container is not interrupted when it is not available.
+    To fix this the daemon.json file should have '"live-restore": true' added to it.
+* 2.16 - Ensure Userland Proxy is Disabled (Automated)
+    serland proxy needs to be set to false in order to allow forwarding using hairpin NAT.
+    To fix this the daemon.json file should have '"userland-proxy": false' added to it.
